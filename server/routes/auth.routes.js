@@ -2,7 +2,7 @@ const express = require('express');
 const {check,param} = require('express-validator');
 
 const Auth = require('../controllers/auth.controller');
-const Password = require('../controllers/password');
+const Password = require('../controllers/password.controller');
 const validate = require('../middlewares/validate');
 const {wrap} = require('../middlewares/asycn.error.handler');
 

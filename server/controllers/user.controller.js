@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const userService = require('../services/user.service');
 const {sendEmail} = require('../utils/send.email');
 const uploader = require('../utils/image.upload');
 
@@ -18,7 +19,7 @@ exports.store = async (req, res) => {
         const {email} = req.body;
 
         // Make sure this account doesn't already exist
-        const user = await User.findOne({email});
+        const user = await userService.findOne({email});
 
         if (user) return res.status(401).json({message: 'The email address you have entered is already associated with another account. You can change this users role instead.'});
 
@@ -58,7 +59,7 @@ exports.show = async function (req, res) {
     try {
         const id = req.params.id;
 
-        const user = await User.findById(id);
+        const user = await userService.findById(id);
 
         if (!user) return res.status(401).json({message: 'User does not exist'});
 
@@ -80,14 +81,14 @@ exports.update = async function (req, res) {
         //Make sure the passed id is that of the logged in user
         if (userId.toString() !== id.toString()) return res.status(401).json({message: "Sorry, you don't have the permission to upd this data."});
 
-        const user = await User.findByIdAndUpdate(id, {$set: update}, {new: true});
+        const user = await userService.findByIdAndUpdate(id, {$set: update}, {new: true});
 
         //if there is no image, return success message
         if (!req.file) return res.status(200).json({user, message: 'User has been updated'});
 
         //Attempt to upload to cloudinary
         const result = await uploader(req);
-        const user_ = await User.findByIdAndUpdate(id, {$set: update}, {$set: {profileImage: result.url}}, {new: true});
+        const user_ = await userService.findByIdAndUpdate(id, {$set: update}, {$set: {profileImage: result.url}}, {new: true});
 
         if (!req.file) return res.status(200).json({user: user_, message: 'User has been updated'});
 
@@ -107,7 +108,7 @@ exports.destroy = async function (req, res) {
         //Make sure the passed id is that of the logged in user
         if (user_id.toString() !== id.toString()) return res.status(401).json({message: "Sorry, you don't have the permission to delete this data."});
 
-        await User.findByIdAndDelete(id);
+        await userService.findByIdAndDelete(id);
         res.status(200).json({message: 'User has been deleted'});
     } catch (error) {
         res.status(500).json({message: error.message});

@@ -3,7 +3,7 @@ const {check} = require('express-validator');
 const multer = require('multer');
 const {wrap} = require('../middlewares/asycn.error.handler');
 
-const User = require('../controllers/user');
+const User = require('../controllers/user.controller');
 const validate = require('../middlewares/validate');
 
 const router = express.Router();
@@ -21,7 +21,7 @@ router.post('/', [
     check('lastName').not().isEmpty().withMessage('You last name is required')
 ], validate, wrap(User.store));
 
-//SHOW
+//GET USER BY ID
 router.get('/:id',  wrap(User.show));
 
 //UPDATE
